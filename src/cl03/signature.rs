@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloc::vec::Vec;
+
 use super::keys::{CL03PublicKey, CL03SecretKey};
 use crate::{
     cl03::{bases::Bases, ciphersuites::CLCiphersuite},

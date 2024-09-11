@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloc::{string::String, vec::Vec};
+
 use super::ciphersuites::BbsCiphersuite;
 use crate::utils::util::bbsplus_utils::i2osp;
 use bls12_381_plus::G1Projective;

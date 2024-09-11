@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloc::{borrow::ToOwned, vec::Vec};
+
 use super::keys::{BBSplusPublicKey, BBSplusSecretKey};
 use crate::{
     bbsplus::{ciphersuites::BbsCiphersuite, generators::Generators},
@@ -24,7 +26,9 @@ use crate::{
         },
     },
 };
-use bls12_381_plus::{multi_miller_loop, G1Projective, G2Prepared, G2Projective, Gt, Scalar};
+use bls12_381_plus::{ G1Projective, Scalar};
+#[cfg(feature = "bbsplus")]
+use bls12_381_plus::{multi_miller_loop, G2Prepared, G2Projective, Gt};
 use elliptic_curve::{group::Curve, hash2curve::ExpandMsg};
 use serde::{Deserialize, Serialize};
 
@@ -118,6 +122,7 @@ impl<CS: BbsCiphersuite> Signature<BBSplus<CS>> {
     ///
     /// # Output:
     /// * a result either [`Ok()`] or [`Error`]
+    #[cfg(feature = "bbsplus")]
     pub fn verify(
         &self,
         pk: &BBSplusPublicKey,
@@ -169,6 +174,7 @@ impl<CS: BbsCiphersuite> Signature<BBSplus<CS>> {
     ///
     /// # Output:
     /// * new [`BBSplusSignature`] or [`Error`]
+    #[cfg(feature = "bbsplus")]
     pub fn update_signature(
         &self,
         sk: &BBSplusSecretKey,
@@ -293,6 +299,7 @@ where
 ///
 /// # Output:
 /// * a result either [`Ok()`] or [`Error`]
+#[cfg(feature = "bbsplus")]
 pub(super) fn core_verify<CS>(
     pk: &BBSplusPublicKey,
     signature: &BBSplusSignature,

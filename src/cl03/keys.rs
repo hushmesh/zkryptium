@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloc::{string::String, vec::Vec};
+
 use crate::{
     cl03::ciphersuites::CLCiphersuite,
     keys::{

@@ -12,21 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(feature = "bbsplus")]
+#[cfg(any(feature = "bbsplus", feature = "min_bbs"))]
 pub mod bbsplus_utils {
+    use alloc::{borrow::ToOwned, string::String, vec::Vec};
+
+    use crate::errors::Error;
     use crate::{bbsplus::ciphersuites::BbsCiphersuite, bbsplus::keys::BBSplusPublicKey};
+    #[cfg(feature = "bbsplus")]
     use crate::{
-        bbsplus::commitment::BlindFactor, errors::Error,
+        bbsplus::commitment::BlindFactor,
         utils::message::bbsplus_message::BBSplusMessage,
     };
     use bls12_381_plus::{G1Affine, G1Projective, G2Affine, G2Projective, Scalar};
+
     use elliptic_curve::{
         group::Curve,
         hash2curve::{ExpandMsg, Expander},
     };
+    #[cfg(feature = "bbsplus")]
     use ff::Field;
+    #[cfg(feature = "bbsplus")]
     use rand::{thread_rng, RngCore};
-    use std::any::{Any, TypeId};
+    use core::any::{Any, TypeId};
 
     pub(crate) fn parse_g2_projective_compressed(slice: &[u8]) -> Result<G2Projective, Error> {
         let point = G2Affine::from_compressed(
@@ -68,6 +75,7 @@ pub mod bbsplus_utils {
     ///
     /// # Output
     /// * Vec<u8>, a secret
+    #[cfg(feature = "bbsplus")]
     pub fn generate_random_secret(n: usize) -> Vec<u8> {
         let mut rng = thread_rng();
         let mut secret = vec![0; n]; // Initialize a vector of length n with zeros
@@ -223,6 +231,7 @@ pub mod bbsplus_utils {
     {
         let mut result: Vec<u8> = Vec::new();
         if array.len() == 0 {
+            #[cfg(feature = "std")]
             println!("Empty array");
             return result;
         }
@@ -260,12 +269,14 @@ pub mod bbsplus_utils {
                 }
             }
         } else {
+            #[cfg(feature = "std")]
             println!("Unknown struct type");
         }
 
         result
     }
 
+    #[cfg(feature = "bbsplus")]
     pub fn get_messages(messages: &[BBSplusMessage], indexes: &[usize]) -> Vec<BBSplusMessage> {
         let mut out: Vec<BBSplusMessage> = Vec::new();
         for &i in indexes {
@@ -275,6 +286,7 @@ pub mod bbsplus_utils {
         out
     }
 
+    #[cfg(feature = "bbsplus")]
     pub fn get_messages_vec(messages: &[Vec<u8>], indexes: &[usize]) -> Vec<Vec<u8>> {
         let mut out: Vec<Vec<u8>> = Vec::new();
         for &i in indexes {
@@ -284,6 +296,7 @@ pub mod bbsplus_utils {
         out
     }
 
+    #[cfg(feature = "bbsplus")]
     pub(crate) fn get_random() -> Scalar {
         let rng = rand::thread_rng();
         Scalar::random(rng)
@@ -301,7 +314,7 @@ pub mod bbsplus_utils {
     /// # Output:
     /// * a [`Vec<Scalar>`].
     ///
-    #[cfg(not(test))]
+    #[cfg(all(not(test), feature = "bbsplus"))]
     pub fn calculate_random_scalars(count: usize) -> Vec<Scalar> {
         let mut random_scalars: Vec<Scalar> = Vec::new();
 
@@ -371,6 +384,7 @@ pub mod bbsplus_utils {
     /// # Output:
     /// * a [`Scalar`] or [`Error`].
     ///
+    #[cfg(feature = "bbsplus")]
     pub fn calculate_blind_challenge<CS>(
         C: G1Projective,
         Cbar: G1Projective,
@@ -416,6 +430,7 @@ pub mod bbsplus_utils {
     ///
     /// * a tuple `(Vec<Vec<u8>>, Vec<usize>)`, two vectors, one corresponding to the disclosed messages and one to the disclosed indexes.
     ///
+    #[cfg(feature = "bbsplus")]
     pub(crate) fn get_disclosed_data(
         messages: &[Vec<u8>],
         committed_messages: &[Vec<u8>],
@@ -568,6 +583,7 @@ pub mod cl03_utils {
     }
 }
 
+#[cfg(feature = "bbsplus")]
 pub(crate) fn get_remaining_indexes(length: usize, indexes: &[usize]) -> Vec<usize> {
     let mut remaining: Vec<usize> = Vec::new();
 

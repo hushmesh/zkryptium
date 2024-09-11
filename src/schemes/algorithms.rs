@@ -15,12 +15,16 @@
 use crate::keys::traits::{PrivateKey, PublicKey};
 use digest::HashMarker;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
+#[cfg(any(feature = "bbsplus", feature = "min_bbs"))]
+use crate::bbsplus::{
+    ciphersuites::BbsCiphersuite,
+    keys::{BBSplusPublicKey, BBSplusSecretKey},
+};
 #[cfg(feature = "bbsplus")]
 use crate::bbsplus::{
-    ciphersuites::{BbsCiphersuite, Bls12381Sha256, Bls12381Shake256},
-    keys::{BBSplusPublicKey, BBSplusSecretKey},
+    ciphersuites::{Bls12381Sha256, Bls12381Shake256},
 };
 
 #[cfg(feature = "cl03")]
@@ -37,7 +41,7 @@ pub type BbsBls12381Sha256 = BBSplus<Bls12381Sha256>;
 #[cfg(feature = "cl03")]
 pub type CL03_CL1024_SHA256 = CL03<CL1024Sha256>;
 
-#[cfg(feature = "bbsplus")]
+#[cfg(any(feature = "bbsplus", feature = "min_bbs"))]
 #[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct BBSplus<CS: BbsCiphersuite>(PhantomData<CS>);
 
@@ -63,7 +67,7 @@ pub trait Scheme: Eq + 'static + Sized + Serialize + DeserializeOwned {
     type PubKey: PublicKey;
 }
 
-#[cfg(feature = "bbsplus")]
+#[cfg(any(feature = "bbsplus", feature = "min_bbs"))]
 impl<CS: BbsCiphersuite> Scheme for BBSplus<CS> {
     type Ciphersuite = CS;
     type PrivKey = BBSplusSecretKey;
