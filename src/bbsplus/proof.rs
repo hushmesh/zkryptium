@@ -617,18 +617,16 @@ where
     let ph = ph.unwrap_or(b"");
 
     let mut c_arr: Vec<u8> = Vec::new();
+    c_arr.extend_from_slice(&i2osp(R, 8));
+    for (i, m) in core::iter::zip(disclosed_indexes, disclosed_messages) {
+        c_arr.extend_from_slice(&i2osp(*i, 8));
+        c_arr.extend_from_slice(&m.value.to_bytes_be());
+    }
     c_arr.extend_from_slice(&init_res.Abar.to_affine().to_compressed());
     c_arr.extend_from_slice(&init_res.Bbar.to_affine().to_compressed());
     c_arr.extend_from_slice(&init_res.D.to_affine().to_compressed());
     c_arr.extend_from_slice(&init_res.T1.to_affine().to_compressed());
     c_arr.extend_from_slice(&init_res.T2.to_affine().to_compressed());
-    c_arr.extend_from_slice(&i2osp(R, 8));
-    disclosed_indexes
-        .iter()
-        .for_each(|&i| c_arr.extend_from_slice(&i2osp(i, 8)));
-    disclosed_messages
-        .iter()
-        .for_each(|m| c_arr.extend_from_slice(&m.value.to_bytes_be()));
     c_arr.extend_from_slice(&init_res.domain.to_bytes_be());
 
     let ph_i2osp = i2osp(ph.len(), 8);
@@ -636,9 +634,7 @@ where
     c_arr.extend_from_slice(&ph_i2osp);
     c_arr.extend_from_slice(ph);
 
-    let challenge = hash_to_scalar::<CS>(&c_arr, &challenge_dst)?;
-
-    Ok(challenge)
+    hash_to_scalar::<CS>(&c_arr, &challenge_dst)
 }
 
 /// https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bbs-signatures-05#name-proof-finalization

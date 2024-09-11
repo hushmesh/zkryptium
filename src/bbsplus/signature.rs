@@ -257,11 +257,11 @@ where
 
     let domain = calculate_domain::<CS>(pk, Q1, H_points, header, Some(api_id))?;
 
-    //serialize
-    let mut input: Vec<Scalar> = Vec::new();
-    input.push(sk.0);
-    input.push(domain);
-    messages.iter().for_each(|m| input.push(m.value)); //the to_byte_le() may be needed instead
+    // Serialize
+    let input: Vec<Scalar> = core::iter::once(sk.0)
+        .chain(messages.iter().map(|m| m.value))
+        .chain(core::iter::once(domain))
+        .collect();
 
     let e = hash_to_scalar::<CS>(&serialize(&input), &signature_dst)?;
 
