@@ -16,4 +16,5 @@
 pub mod random;
 
 pub mod message;
+pub mod pluggable_rng;
 pub mod util;

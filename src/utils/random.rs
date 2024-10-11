@@ -17,8 +17,10 @@ use rug::rand::RandState;
 use rug::{Complete, Integer};
 use std::cmp::Ordering;
 
+use crate::utils::pluggable_rng::get_new_rng;
+
 pub fn random_bits(n: u32) -> Integer {
-    let mut rng = rand::thread_rng();
+    let mut rng = get_new_rng();
     let seed = Integer::from(rng.gen::<u32>());
     let mut rand = RandState::new_mersenne_twister();
     rand.seed(&seed);
@@ -28,7 +30,7 @@ pub fn random_bits(n: u32) -> Integer {
 }
 
 pub fn random_number(n: Integer) -> Integer {
-    let mut rng = rand::thread_rng();
+    let mut rng = get_new_rng();
     let seed = Integer::from(rng.gen::<u32>());
     let mut rand = RandState::new_mersenne_twister();
     rand.seed(&seed);
@@ -55,7 +57,7 @@ pub fn random_qr(n: &Integer) -> Integer {
 }
 
 pub fn rand_int(a: Integer, b: Integer) -> Integer {
-    let mut rng = rand::thread_rng();
+    let mut rng = get_new_rng();
     let seed = Integer::from(rng.gen::<u32>());
     let mut rand = RandState::new_mersenne_twister();
     rand.seed(&seed);

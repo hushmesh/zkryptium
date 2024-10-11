@@ -16,21 +16,21 @@ use alloc::vec::Vec;
 
 #[cfg(any(feature = "min_bbs"))]
 pub mod bbsplus_utils {
-    use alloc::{borrow::ToOwned, vec::Vec, string::String};
-    use core::any::{Any, TypeId};
+    use crate::utils::pluggable_rng::get_new_rng;
     use crate::{
-        errors::Error,
-        bbsplus::ciphersuites::BbsCiphersuite,
-        bbsplus::keys::BBSplusPublicKey,
+        bbsplus::ciphersuites::BbsCiphersuite, bbsplus::keys::BBSplusPublicKey, errors::Error,
         utils::message::bbsplus_message::BBSplusMessage,
     };
+    use alloc::{borrow::ToOwned, string::String, vec::Vec};
     use bls12_381_plus::{G1Affine, G1Projective, G2Affine, G2Projective, Scalar};
+    use core::any::{Any, TypeId};
     use elliptic_curve::{
         group::Curve,
         hash2curve::{ExpandMsg, Expander},
     };
     use ff::Field;
-    use rand::{thread_rng, RngCore};
+
+    use rand::RngCore;
 
     pub(crate) fn parse_g2_projective_compressed(slice: &[u8]) -> Result<G2Projective, Error> {
         let point = G2Affine::from_compressed(
@@ -73,8 +73,8 @@ pub mod bbsplus_utils {
     /// # Output
     /// * Vec<u8>, a secret
     pub fn generate_random_secret(n: usize) -> Vec<u8> {
-        let mut rng = thread_rng();
         let mut secret = vec![0; n]; // Initialize a vector of length n with zeros
+        let mut rng = get_new_rng();
         rng.fill_bytes(&mut secret); // Fill the vector with random bytes
         secret
     }
@@ -275,14 +275,11 @@ pub mod bbsplus_utils {
     }
 
     pub fn get_messages_vec(messages: &[Vec<u8>], indexes: &[usize]) -> Vec<Vec<u8>> {
-        indexes
-            .into_iter()
-            .map(|&i| messages[i].clone())
-            .collect()
+        indexes.into_iter().map(|&i| messages[i].clone()).collect()
     }
 
     pub(crate) fn get_random() -> Scalar {
-        let rng = rand::thread_rng();
+        let rng = get_new_rng();
         Scalar::random(rng)
     }
 
