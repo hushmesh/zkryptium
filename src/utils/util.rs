@@ -279,8 +279,8 @@ pub mod bbsplus_utils {
     }
 
     pub(crate) fn get_random() -> Scalar {
-        let rng = get_new_rng();
-        Scalar::random(rng)
+        let mut rng = get_new_rng();
+        Scalar::random(&mut *rng)
     }
 
     /// https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bbs-signatures-06#name-random-scalars
